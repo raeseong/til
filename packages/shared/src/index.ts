@@ -1,28 +1,28 @@
-export interface BaseEntity {
+export type BaseEntity = {
   id: number;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-}
+};
 
-export interface Post extends BaseEntity {
+export type Post = BaseEntity & {
   title: string;
   summary: string;
   content: string;
   tags: string[];
   published: boolean;
   slug: string;
-}
+};
 
-export interface CreatePostDto {
+export type CreatePostDto = {
   title: string;
   summary: string;
   content: string;
   tags: string[];
   published: boolean;
-}
+};
 
-export interface UpdatePostDto extends Partial<CreatePostDto> {}
+export type UpdatePostDto = Partial<CreatePostDto>;
 
 export function generateSlug(title: string): string {
   return title
