@@ -1,0 +1,35 @@
+:root {
+  --color-bg: #0f0f12;
+  --color-surface: #1a1a1f;
+  --color-border: #2a2a32;
+  --color-text: #e8e8ed;
+  --color-text-muted: #8b8b9a;
+  --color-accent: #6366f1;
+  --color-accent-hover: #818cf8;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+#root {
+  min-height: 100vh;
+}

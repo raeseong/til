@@ -1,0 +1,43 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+build
+out
+.vite
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs & cache
+*.log
+pnpm-debug.log*
+.eslintcache
+.cache
+coverage
+
+# IDE
+.idea
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Data (file-based DB)
+**/data/*.json
+!**/data/.gitkeep
+
+# Deploy / runtime
+.vercel
+.turbo
