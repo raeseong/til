@@ -5,6 +5,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = app.get(ConfigService);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -12,12 +15,17 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const corsOrigins = config.get<string>('CORS_ORIGINS');
+  const origin = corsOrigins
+    ? corsOrigins.split(',').map((o) => o.trim())
+    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
+
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
+    origin,
     credentials: true,
   });
 
-  const config = app.get(ConfigService);
   const port = config.get<number>('PORT') ?? 3001;
 
   await app.listen(port);

@@ -2,16 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getPosts } from '../api/client';
 
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string;
-  tags: string[];
-}
-
 export default function PostsPage() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<{ id: number; title: string; slug: string; summary: string; tags: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -19,7 +19,7 @@ export default function PostEditPage() {
 
   useEffect(() => {
     if (isNew) return;
-    getPostById(id!)
+    getPostById(Number(id))
       .then((post) => {
         if (post) {
           setTitle(post.title);
@@ -45,7 +45,7 @@ export default function PostEditPage() {
       if (isNew) {
         await createPost({ title, summary, content, tags: tagList, published });
       } else {
-        await updatePost(id!, { title, summary, content, tags: tagList, published });
+        await updatePost(Number(id), { title, summary, content, tags: tagList, published });
       }
       navigate('/');
     } catch (err) {
