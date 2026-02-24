@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
-import { SupabaseModule } from './supabase/supabase.module';
+import { PostEntity } from './posts/post.entity';
 
 @Module({
   imports: [
@@ -10,7 +11,15 @@ import { SupabaseModule } from './supabase/supabase.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    SupabaseModule,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        url: config.get<string>('SUPABASE_DB_URL'),
+        entities: [PostEntity],
+        synchronize: true, // dev only
+      }),
+    }),
     PostsModule,
     AuthModule,
   ],

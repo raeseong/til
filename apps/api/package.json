@@ -14,14 +14,16 @@
     "@nestjs/mapped-types": "^2.0.4",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.0",
-    "@supabase/supabase-js": "^2.39.0",
+    "@nestjs/typeorm": "^11.0.0",
     "@til/shared": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "pg": "^8.18.0",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.0",

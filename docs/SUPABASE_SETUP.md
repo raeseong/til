@@ -9,13 +9,11 @@ TIL API가 Supabase PostgreSQL을 사용하도록 설정하는 방법입니다.
 3. 프로젝트 이름, 비밀번호, 리전 입력 후 생성
 4. 프로젝트가 준비될 때까지 대기 (1~2분)
 
-## 2. credentials 확인
+## 2. credentials 확인 (Postgres 연결용)
 
 1. Supabase 대시보드 좌측 **Project Settings** (톱니바퀴) 클릭
-2. **API** 메뉴 선택
-3. 다음 값 복사:
-   - **Project URL** → `SUPABASE_URL`
-   - **Service Role Key** (anon key 아님) → `SUPABASE_SERVICE_ROLE_KEY`
+2. **Database** 메뉴 선택
+3. `Connection string` → `URI` 값을 복사해서 `SUPABASE_DB_URL`에 설정
 
 ## 3. posts 테이블 생성
 
@@ -80,8 +78,7 @@ PORT=3001
 ADMIN_PASSWORD=admin123
 JWT_SECRET=til-secret-key-change-in-production
 
-SUPABASE_URL=https://xxxxxxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_DB_URL=postgresql://user:password@host:5432/postgres
 ```
 
 ## 6. 실행
@@ -93,11 +90,11 @@ pnpm dev:api
 
 ## 구조 요약
 
-| 이전 (파일) | 이후 (Supabase) |
-|-------------|-----------------|
-| StorageService | SupabaseService + PostsRepository |
-| `data/posts.json` | PostgreSQL `posts` 테이블 |
-| 동기 I/O | 비동기 (async/await) |
+| 이전 (파일)        | 이후 (Supabase + TypeORM)        |
+|--------------------|----------------------------------|
+| StorageService     | TypeORM `PostEntity` + Repository |
+| `data/posts.json`  | PostgreSQL `posts` 테이블         |
+| 수동 soft delete   | `deleted_at` + TypeORM softRemove |
 
 ## 주의사항
 
