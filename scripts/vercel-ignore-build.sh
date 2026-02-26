@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Vercel "Ignored Build Step": exit 0 = skip build, exit 1 = run build.
 # Run only when one of the given path prefixes has changed (or first deploy).
-# Usage: bash scripts/vercel-ignore-build.sh apps/public-next packages/shared
+# Usage: bash scripts/vercel-ignore-build.sh apps/frontend-web packages/shared
 
 set -e
 SCOPES=("$@")
 
 if [ ${#SCOPES[@]} -eq 0 ]; then
-  echo "Usage: $0 <path1> [path2] ... (e.g. apps/public-next packages/shared)"
+  echo "Usage: $0 <path1> [path2] ... (e.g. apps/frontend-web packages/shared)"
   exit 1
 fi
 

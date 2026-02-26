@@ -5,9 +5,9 @@ API 서비스의 Root Directory, Build Filter, 빌드/시작 명령은 **코드*
 ## 설정 파일
 
 - **`render.yaml`** (저장소 루트)  
-  - 서비스 한 개: `til-api`  
-  - `rootDir: apps/api`  
-  - `buildFilter.paths`: `apps/api/**`, `packages/shared/**` → 이 경로가 바뀐 푸시에서만 자동 배포
+  - 서비스 한 개: `til-backend`
+  - `rootDir: apps/backend`
+  - `buildFilter.paths`: `apps/backend/**`, `packages/shared/**` → 이 경로가 바뀐 푸시에서만 자동 배포
 
 ## Blueprint 연결 방법
 
@@ -19,7 +19,7 @@ API 서비스의 Root Directory, Build Filter, 빌드/시작 명령은 **코드*
 이미 **수동으로 만든 API 서비스**가 있다면:
 
 - **A)** 그 서비스를 삭제한 뒤, 위처럼 Blueprint로 새로 만들면 `render.yaml` 설정이 그대로 적용됩니다.
-- **B)** 서비스 이름을 `render.yaml`의 `name: til-api`와 맞추고, 같은 저장소를 Blueprint로 연결해 동기화할 수 있습니다. (이름이 다르면 새 서비스가 생길 수 있음)
+- **B)** 서비스 이름을 `render.yaml`의 `name: til-backend`와 맞추고, 같은 저장소를 Blueprint로 연결해 동기화할 수 있습니다. (이름이 다르면 새 서비스가 생길 수 있음)
 
 ## 환경 변수
 

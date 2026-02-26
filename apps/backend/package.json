@@ -1,5 +1,5 @@
 {
-  "name": "@til/api",
+  "name": "@til/backend",
   "version": "1.0.0",
   "scripts": {
     "build": "nest build",

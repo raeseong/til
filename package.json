@@ -3,16 +3,14 @@
   "private": true,
   "scripts": {
     "prepare": "pnpm --filter @til/shared build",
-    "dev": "pnpm --filter @til/shared build && pnpm -r --parallel run dev --filter '@til/api' --filter '@til/public' --filter '@til/admin' --filter '@til/shared'",
-    "dev:api": "pnpm --filter @til/api dev",
-    "dev:public": "pnpm --filter @til/public dev",
-    "dev:public-next": "pnpm --filter @til/public-next dev",
-    "dev:admin": "pnpm --filter @til/admin dev",
+    "dev": "pnpm --filter @til/shared build && pnpm -r --parallel run dev --filter '@til/backend' --filter '@til/frontend-admin' --filter '@til/frontend-web' --filter '@til/shared'",
+    "dev:backend": "pnpm --filter @til/backend dev",
+    "dev:frontend-admin": "pnpm --filter @til/frontend-admin dev",
+    "dev:frontend-web": "pnpm --filter @til/frontend-web dev",
     "build": "pnpm -r run build",
-    "build:api": "pnpm --filter @til/api build",
-    "build:public": "pnpm --filter @til/public build",
-    "build:public-next": "pnpm --filter @til/public-next build",
-    "build:admin": "pnpm --filter @til/admin build"
+    "build:backend": "pnpm --filter @til/backend build",
+    "build:frontend-admin": "pnpm --filter @til/frontend-admin build",
+    "build:frontend-web": "pnpm --filter @til/frontend-web build"
   },
   "engines": {
     "node": ">=18"

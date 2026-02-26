@@ -4,21 +4,21 @@
 
 services:
   - type: web
-    name: til-api
+    name: til-backend
     runtime: node
     region: oregon
 
     # 모노레포: API 앱 기준 디렉터리. 빌드/시작 명령은 이 경로에서 실행됩니다.
-    rootDir: apps/api
+    rootDir: apps/backend
 
-    # 저장소 루트에서 의존성 설치 및 shared → api 순서로 빌드
-    buildCommand: cd ../.. && corepack enable && pnpm install && pnpm --filter @til/shared build && pnpm --filter @til/api build
+    # 저장소 루트에서 의존성 설치 및 shared → backend 순서로 빌드
+    buildCommand: cd ../.. && corepack enable && pnpm install && pnpm --filter @til/shared build && pnpm --filter @til/backend build
     startCommand: node dist/main
 
     # 이 경로가 변경된 푸시에서만 자동 배포 (그 외 푸시는 배포 스킵)
     buildFilter:
       paths:
-        - apps/api/**
+        - apps/backend/**
         - packages/shared/**
 
     # 환경 변수(SUPABASE_URL, JWT_SECRET 등)는 대시보드에서 설정하거나

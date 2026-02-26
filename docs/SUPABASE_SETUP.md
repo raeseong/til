@@ -73,7 +73,7 @@ ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
 ## 5. 환경 변수 설정
 
-`apps/api/.env` 파일 생성:
+`apps/backend/.env` 파일 생성:
 
 ```env
 PORT=3001
@@ -88,7 +88,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ```bash
 pnpm install
-pnpm dev:api
+pnpm dev:backend
 ```
 
 ## 구조 요약

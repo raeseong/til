@@ -17,13 +17,13 @@ export default function ArchitecturePage() {
         <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>모노레포 구성</h2>
         <ul style={{ paddingLeft: '1.5rem', lineHeight: 1.8 }}>
           <li>
-            <code>apps/public-next</code> — 공개 페이지 (Next.js)
+            <code>apps/frontend-web</code> — 공개 페이지 (Next.js)
           </li>
           <li>
-            <code>apps/admin</code> — 어드민 페이지 (React + Vite)
+            <code>apps/frontend-admin</code> — 어드민 페이지 (React + Vite)
           </li>
           <li>
-            <code>apps/api</code> — 백엔드 API (NestJS)
+            <code>apps/backend</code> — 백엔드 API (NestJS)
           </li>
           <li>
             <code>packages/shared</code> — 공통 타입·유틸
