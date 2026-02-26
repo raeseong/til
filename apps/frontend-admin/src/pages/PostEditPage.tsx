@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getPostById, createPost, updatePost } from '../api/client';
 
 export default function PostEditPage() {
@@ -111,7 +112,7 @@ export default function PostEditPage() {
                 lineHeight: 1.7,
               }}
             >
-              <ReactMarkdown>{content || '*미리보기*'}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || '*미리보기*'}</ReactMarkdown>
             </div>
           </div>
         </div>

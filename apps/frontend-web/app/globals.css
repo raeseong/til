@@ -29,3 +29,20 @@ a:hover {
   color: var(--color-accent-hover);
   text-decoration: underline;
 }
+
+/* Markdown 본문 내 테이블 (GFM) */
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.markdown-body th {
+  background: var(--color-surface);
+  font-weight: 600;
+}

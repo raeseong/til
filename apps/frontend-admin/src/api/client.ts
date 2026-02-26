@@ -44,6 +44,8 @@ export async function login(password: string): Promise<{ access_token: string }>
   });
 }
 
+import type { PaginatedResponse } from '@til/shared';
+
 export interface Post {
   id: number;
   title: string;
@@ -57,27 +59,15 @@ export interface Post {
   deleted_at: string | null;
 }
 
-export type PaginationMeta = {
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  totalPage: number;
-};
-
-export type PaginatedPostsResponse = {
-  pagination: PaginationMeta;
-  list: Post[];
-};
-
 export async function getAllPosts(params?: {
   page?: number;
   pageSize?: number;
-}): Promise<PaginatedPostsResponse> {
+}): Promise<PaginatedResponse<Post>> {
   const search = new URLSearchParams();
   if (params?.page != null) search.set('page', String(params.page));
   if (params?.pageSize != null) search.set('pageSize', String(params.pageSize));
   const query = search.toString() ? `?${search.toString()}` : '';
-  return fetchApi<PaginatedPostsResponse>(`/posts/admin/all${query}`);
+  return fetchApi<PaginatedResponse<Post>>(`/posts/admin/all${query}`);
 }
 
 export async function getPostById(id: number): Promise<Post | null> {

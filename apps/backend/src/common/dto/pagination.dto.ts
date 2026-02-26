@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsOptional, Min, Max } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+import type { PaginationMeta, PaginatedResponse } from '@til/shared';
 
 /**
  * 페이지네이션 요청 DTO
@@ -72,10 +73,8 @@ export class PaginationMetaDto {
   totalPage: number;
 }
 
-export type PaginatedResponseDto<T> = {
-  pagination: PaginationMetaDto;
-  list: T[];
-};
+/** shared PaginatedResponse와 동일한 형태 (Swagger/서비스 타입) */
+export type PaginatedResponseDto<T> = PaginatedResponse<T>;
 
 /**
  * 페이지네이션 응답 DTO 팩토리
@@ -111,7 +110,7 @@ export function buildPaginationMeta(
   page: number,
   pageSize: number,
   totalCount: number,
-): PaginationMetaDto {
+): PaginationMeta {
   return {
     page,
     pageSize,

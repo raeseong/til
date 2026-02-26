@@ -28,24 +28,28 @@
 
 **Root Directory를 비워 둔 경우 (저장소 루트)**
 
-- **Build Command** (루트에서 실행되므로 그대로 사용 가능):
+- **Build Command** (Turbo 사용 권장):
   ```bash
-  pnpm install --frozen-lockfile && pnpm --filter @til/shared build && pnpm --filter @til/backend build
+  pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=@til/backend
   ```
+  shared → backend 순서로 빌드되고, Turbo 캐시가 적용됩니다.
 - **Start Command** (실행 파일이 `apps/backend/dist/main` 에 있으므로):
   ```bash
   node apps/backend/dist/main
   ```
-  루트가 작업 디렉터리이므로 `node dist/main` 이 아니라 **`node apps/backend/dist/main`** 이어야 합니다. `dist/main`만 쓰면 루트의 `dist`를 찾아서 실패합니다.
+  루트가 작업 디렉터리이므로 `node dist/main` 이 아니라 **`node apps/backend/dist/main`** 이어야 합니다.
 
 **Root Directory를 `apps/backend`로 둔 경우**
 
-- **Build Command** (한 단계 위로 올라가서 설치·빌드):
+- **Build Command** (Turbo 사용 권장):
   ```bash
-  cd ../.. && corepack enable && pnpm install && pnpm --filter @til/shared build && pnpm --filter @til/backend build
+  cd ../.. && corepack enable && pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=@til/backend
   ```
 - **Start Command**: `node dist/main`  
   (현재 디렉터리가 `apps/backend`이므로 `dist/main` = `apps/backend/dist/main`)
+
+**기존 방식** (Turbo 없이):  
+`pnpm --filter @til/shared build && pnpm --filter @til/backend build` 로도 동작하지만, Turbo를 쓰면 빌드 순서·캐시가 로컬과 동일해집니다.
 
 ### 4) Build Filter (Included Paths) — 필수
 

@@ -44,6 +44,8 @@ pnpm dev:frontend-web  # 공개 페이지만
 pnpm dev:frontend-admin # 어드민만
 ```
 
+빌드는 [Turborepo](https://turbo.build/)로 실행됩니다. `pnpm build` 시 shared → 앱 순서로 빌드되고, 변경 없는 패키지는 캐시에서 재사용됩니다.
+
 ## 데이터 저장
 
 Supabase PostgreSQL 사용. Prisma ORM으로 `posts` 테이블에 접근합니다.
@@ -56,6 +58,7 @@ Supabase PostgreSQL 사용. Prisma ORM으로 `posts` 테이블에 접근합니�
 | [Render 배포 설정](docs/render.md) | Backend API 배포, Build Filter, 환경 변수, GitHub 체크 표시 |
 | [Supabase + Prisma 연동](docs/SUPABASE_SETUP.md) | Supabase 프로젝트, DATABASE_URL, posts 테이블, Prisma 연동 |
 | [Prisma ↔ DB 워크플로](docs/prisma-db-workflow.md) | 스키마 vs DB 기준, migrate / db pull, Prod 반영 |
+| [Turborepo 동작 원리](docs/turbo.md) | build/dev 순서, 캐시, 필터, 이 프로젝트 적용 기준 |
 | [공유 패키지·타입 정책](docs/shared-package.md) | shared 용도, 엔티티/DTO 분리, Prisma 타입 사용 |
 | [백엔드 개선·추가 기능](docs/backend-improvements.md) | 보안, 검증, Health check, Rate limit, Swagger 등 |
 

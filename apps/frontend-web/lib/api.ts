@@ -8,6 +8,8 @@
  * - 서버에서는 직접 Nest 로 요청 → 응답을 HTML 에 넣어 보내므로 SEO·첫 로드에 유리.
  */
 
+import type { PaginatedResponse } from '@til/shared';
+
 function getApiBase(): string {
   if (typeof window === 'undefined') {
     return process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:3001';
@@ -43,24 +45,12 @@ export type PostDetail = PostListItem & {
   updated_at: string;
 };
 
-export type PaginationMeta = {
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  totalPage: number;
-};
-
-export type PaginatedPostsResponse = {
-  pagination: PaginationMeta;
-  list: PostListItem[];
-};
-
-export async function getPosts(params?: { page?: number; pageSize?: number }): Promise<PaginatedPostsResponse> {
+export async function getPosts(params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<PostListItem>> {
   const search = new URLSearchParams();
   if (params?.page != null) search.set('page', String(params.page));
   if (params?.pageSize != null) search.set('pageSize', String(params.pageSize));
   const query = search.toString() ? `?${search.toString()}` : '';
-  return fetchApi<PaginatedPostsResponse>(`/posts${query}`);
+  return fetchApi<PaginatedResponse<PostListItem>>(`/posts${query}`);
 }
 
 export async function getPostBySlug(slug: string): Promise<PostDetail | null> {

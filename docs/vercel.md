@@ -17,7 +17,26 @@ Vercel에는 `vercel.json`으로 Root Directory를 지정할 수 없습니다. *
 
 ---
 
-## 2. Ignored Build Step (모노레포 배포 최적화)
+## 2. Install / Build Command (Turbo 권장)
+
+Root Directory를 앱으로 둔 상태에서, **설치와 빌드를 저장소 루트 기준**으로 하려면 아래처럼 설정합니다.  
+이렇게 하면 **shared → 해당 앱** 순서로 빌드되고, Turbo 캐시를 쓸 수 있습니다.
+
+| 설정 | frontend-web | frontend-admin |
+|------|----------------|----------------|
+| **Install Command** | `cd ../.. && pnpm install` | `cd ../.. && pnpm install` |
+| **Build Command** | `cd ../.. && pnpm exec turbo run build --filter=@til/frontend-web` | `cd ../.. && pnpm exec turbo run build --filter=@til/frontend-admin` |
+| **Output Directory** | (기본값 사용, Next는 `.next`) | `dist` |
+
+- Install을 루트에서 하면 워크스페이스 전체 의존성이 설치되고, Turbo가 shared를 인식합니다.
+- Build는 루트에서 `turbo run build --filter=...` 로 실행해 **shared가 먼저 빌드**된 뒤 해당 앱만 빌드됩니다.
+- Vercel에서 **Turbo 원격 캐시**를 켜면, shared 등 변경 없을 때 캐시 히트로 빌드 시간이 줄어듭니다 (대시보드 또는 [문서](https://vercel.com/docs/monorepos/remote-caching) 참고).
+
+기존처럼 앱 디렉터리에서만 빌드하려면 Install Command는 비우고, Build Command를 해당 앱의 `pnpm run build`(또는 `next build` / `vite build`)로 두면 됩니다. 이 경우 shared는 `prepare` 등으로 미리 빌드되어 있어야 합니다.
+
+---
+
+## 3. Ignored Build Step (모노레포 배포 최적화)
 
 해당 앱·shared·루트 의존성 외의 변경만 있었을 때는 빌드를 스킵하려면 **Ignored Build Step**을 사용합니다.
 
@@ -47,7 +66,7 @@ Vercel에는 `vercel.json`으로 Root Directory를 지정할 수 없습니다. *
 
 ---
 
-## 3. 변경 없는데 빌드가 실행되는 경우
+## 4. 변경 없는데 빌드가 실행되는 경우
 
 다음 두 경우에는 **경로와 상관없이** 빌드가 실행됩니다.
 
