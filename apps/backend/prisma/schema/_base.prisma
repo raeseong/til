@@ -1,0 +1,19 @@
+// =============================================================================
+// Prisma Schema (multi-file)
+// =============================================================================
+// Base entity 컨벤션 (shared BaseEntity 타입과 맞춤):
+//   - id          BigInt    @id @default(autoincrement())
+//   - created_at  DateTime  @default(now())
+//   - updated_at  DateTime  @updatedAt
+//   - deleted_at  DateTime? (soft delete)
+// 새 모델 추가 시 위 필드를 공통으로 두고, 도메인 필드는 그 아래에 정의합니다.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

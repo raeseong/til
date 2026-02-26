@@ -16,12 +16,16 @@ services:
     startCommand: node dist/main
 
     # 이 경로가 변경된 푸시에서만 자동 배포 (그 외 푸시는 배포 스킵)
+    # 루트의 package.json, pnpm-lock.yaml, pnpm-workspace.yaml 변경도 포함 (의존성/워크스페이스 변경 시 재배포)
     buildFilter:
       paths:
         - apps/backend/**
         - packages/shared/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
 
-    # 환경 변수(SUPABASE_URL, JWT_SECRET 등)는 대시보드에서 설정하거나
+    # 환경 변수(DATABASE_URL, JWT_SECRET 등)는 대시보드에서 설정하거나
     # envVarGroups / envVars 로 비밀 아닌 값만 지정합니다.
     # envVars:
     #   - key: NODE_ENV

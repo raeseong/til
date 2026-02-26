@@ -1,0 +1,26 @@
+// -----------------------------------------------------------------------------
+// Post (BaseEntity + 도메인 필드)
+// -----------------------------------------------------------------------------
+// 조회 패턴: published + deleted_at IS NULL, slug 유니크, 최신순 정렬
+// 인덱스: slug(unique), published, (published, updated_at DESC) — partial index는 SQL로 적용
+// -----------------------------------------------------------------------------
+
+model Post {
+  // BaseEntity 필드
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  // 도메인 필드
+  title     String
+  summary   String
+  content   String
+  tags      String[]
+  published Boolean   @default(false)
+  slug      String    @unique
+
+  @@index([published], name: "posts_published_idx")
+  @@index([published, updated_at(sort: Desc)], name: "posts_published_updated_at_idx")
+  @@map("posts")
+}

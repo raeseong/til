@@ -1,152 +1,118 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { SupabaseService } from '../supabase/supabase.service';
 import { Post } from '@til/shared';
-
-const TABLE = 'posts';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PostsRepository {
-  constructor(private readonly supabase: SupabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  private throwOnError(error: { message: string }): never {
-    throw new InternalServerErrorException(error.message);
+  private mapRow(row: {
+    id: bigint;
+    title: string;
+    summary: string;
+    content: string;
+    tags: string[];
+    published: boolean;
+    slug: string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+  }): Post {
+    return {
+      id: Number(row.id),
+      title: row.title,
+      summary: row.summary,
+      content: row.content,
+      tags: row.tags ?? [],
+      published: row.published,
+      slug: row.slug,
+      created_at: row.created_at.toISOString(),
+      updated_at: row.updated_at.toISOString(),
+      deleted_at: row.deleted_at?.toISOString() ?? null,
+    };
   }
 
   async findAll(): Promise<Post[]> {
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .select('*')
-      .is('deleted_at', null)
-      .order('id', { ascending: true });
-    if (error) this.throwOnError(error);
-    return (data ?? []).map(this.mapRow);
+    const rows = await this.prisma.post.findMany({
+      where: { deleted_at: null },
+      orderBy: { id: 'asc' },
+    });
+    return rows.map((row) => this.mapRow(row));
   }
 
   async findPublished(): Promise<Post[]> {
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .select('*')
-      .eq('published', true)
-      .is('deleted_at', null)
-      .order('id', { ascending: false });
-    if (error) this.throwOnError(error);
-    return (data ?? []).map(this.mapRow);
+    const rows = await this.prisma.post.findMany({
+      where: { published: true, deleted_at: null },
+      orderBy: { id: 'desc' },
+    });
+    return rows.map((row) => this.mapRow(row));
   }
 
   async findById(id: number): Promise<Post | null> {
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .select('*')
-      .eq('id', id)
-      .is('deleted_at', null)
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null;
-      this.throwOnError(error);
-    }
-    return data ? this.mapRow(data) : null;
+    const row = await this.prisma.post.findFirst({
+      where: { id, deleted_at: null },
+    });
+    return row ? this.mapRow(row) : null;
   }
 
   async findBySlug(slug: string): Promise<Post | null> {
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .select('*')
-      .eq('slug', slug)
-      .is('deleted_at', null)
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null;
-      this.throwOnError(error);
-    }
-    return data ? this.mapRow(data) : null;
+    const row = await this.prisma.post.findFirst({
+      where: { slug, deleted_at: null },
+    });
+    return row ? this.mapRow(row) : null;
   }
 
   /** slug가 이미 존재하는지 확인 (excludeId 제외). */
   async existsBySlug(slug: string, excludeId?: number): Promise<boolean> {
-    let q = this.supabase
-      .getClient()
-      .from(TABLE)
-      .select('id', { count: 'exact', head: true })
-      .eq('slug', slug)
-      .is('deleted_at', null);
-    if (excludeId != null) {
-      q = q.neq('id', excludeId);
-    }
-    const { count, error } = await q;
-    if (error) this.throwOnError(error);
-    return (count ?? 0) > 0;
+    const count = await this.prisma.post.count({
+      where: {
+        slug,
+        deleted_at: null,
+        ...(excludeId != null ? { id: { not: excludeId } } : {}),
+      },
+    });
+    return count > 0;
   }
 
   async create(post: Omit<Post, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<Post> {
-    const now = new Date().toISOString();
-    const row = {
-      title: post.title,
-      summary: post.summary,
-      content: post.content,
-      tags: post.tags,
-      published: post.published,
-      slug: post.slug,
-      created_at: now,
-      updated_at: now,
-      deleted_at: null,
-    };
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .insert(row)
-      .select()
-      .single();
-    if (error) this.throwOnError(error);
-    return this.mapRow(data);
+    const row = await this.prisma.post.create({
+      data: {
+        title: post.title,
+        summary: post.summary,
+        content: post.content,
+        tags: post.tags,
+        published: post.published,
+        slug: post.slug,
+      },
+    });
+    return this.mapRow(row);
   }
 
   async update(id: number, updates: Partial<Omit<Post, 'id' | 'created_at'>>): Promise<Post | null> {
     const { updated_at, deleted_at, ...rest } = updates as Partial<Post>;
-    const row = { ...rest, updated_at: new Date().toISOString() };
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .update(row)
-      .eq('id', id)
-      .is('deleted_at', null)
-      .select()
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null;
-      this.throwOnError(error);
-    }
-    return data ? this.mapRow(data) : null;
+    const existing = await this.prisma.post.findFirst({
+      where: { id, deleted_at: null },
+    });
+    if (!existing) return null;
+    const row = await this.prisma.post.update({
+      where: { id },
+      data: {
+        ...(rest.title != null && { title: rest.title }),
+        ...(rest.summary != null && { summary: rest.summary }),
+        ...(rest.content != null && { content: rest.content }),
+        ...(rest.tags != null && { tags: rest.tags }),
+        ...(rest.published != null && { published: rest.published }),
+        ...(rest.slug != null && { slug: rest.slug }),
+      },
+    });
+    return this.mapRow(row);
   }
 
   async softDelete(id: number): Promise<boolean> {
-    const now = new Date().toISOString();
-    const { data, error } = await this.supabase
-      .getClient()
-      .from(TABLE)
-      .update({ updated_at: now, deleted_at: now })
-      .eq('id', id)
-      .is('deleted_at', null)
-      .select('id');
-    if (error) this.throwOnError(error);
-    return (data?.length ?? 0) > 0;
-  }
-
-  private mapRow(row: Record<string, unknown>): Post {
-    return {
-      id: row.id as number,
-      title: row.title as string,
-      summary: row.summary as string,
-      content: row.content as string,
-      tags: (row.tags as string[]) ?? [],
-      published: row.published as boolean,
-      slug: row.slug as string,
-      created_at: row.created_at as string,
-      updated_at: row.updated_at as string,
-      deleted_at: (row.deleted_at as string) ?? null,
-    };
+    const result = await this.prisma.post.updateMany({
+      where: { id, deleted_at: null },
+      data: { deleted_at: new Date() },
+    });
+    return result.count > 0;
   }
 }
