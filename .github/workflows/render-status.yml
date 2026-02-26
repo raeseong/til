@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wait for Render deployment
-        uses: bounceapp/render-action@v0.12.0
+        uses: bounceapp/render-action@0.12.0
         with:
           render-token: ${{ secrets.RENDER_TOKEN }}
           service-id: ${{ secrets.RENDER_SERVICE_ID }}

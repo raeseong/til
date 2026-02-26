@@ -17,12 +17,12 @@ AI와 함께 공부한 내용을 정리하고 공유하는 포트폴리오 서�
 pnpm install
 ```
 
-### 2. Supabase 설정
+### 2. 데이터베이스 설정
 
-데이터베이스로 Supabase(PostgreSQL)를 사용합니다. 자세한 설정은 [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)를 참고하세요.
+데이터베이스로 Supabase(PostgreSQL)를 사용하고, 앱에서는 Prisma로 접근합니다. 자세한 설정은 [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)를 참고하세요.
 
-- Supabase 프로젝트 생성 후 `posts` 테이블 생성
-- `apps/backend/.env`에 `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` 설정
+- Supabase 프로젝트 생성 후 `posts` 테이블 생성 (또는 Prisma Migrate 사용)
+- `apps/backend/.env`에 `DATABASE_URL` 설정
 
 ### 3. 개발 서버 실행
 
@@ -46,7 +46,18 @@ pnpm dev:frontend-admin # 어드민만
 
 ## 데이터 저장
 
-Supabase PostgreSQL 사용. `posts` 테이블에 저장됩니다.
+Supabase PostgreSQL 사용. Prisma ORM으로 `posts` 테이블에 접근합니다.
+
+## 문서
+
+| 주제 | 설명 |
+|------|------|
+| [Vercel 배포 설정](docs/vercel.md) | Frontend Web/Admin 배포, Root Directory, Ignored Build Step |
+| [Render 배포 설정](docs/render.md) | Backend API 배포, Build Filter, 환경 변수, GitHub 체크 표시 |
+| [Supabase + Prisma 연동](docs/SUPABASE_SETUP.md) | Supabase 프로젝트, DATABASE_URL, posts 테이블, Prisma 연동 |
+| [Prisma ↔ DB 워크플로](docs/prisma-db-workflow.md) | 스키마 vs DB 기준, migrate / db pull, Prod 반영 |
+| [공유 패키지·타입 정책](docs/shared-package.md) | shared 용도, 엔티티/DTO 분리, Prisma 타입 사용 |
+| [백엔드 개선·추가 기능](docs/backend-improvements.md) | 보안, 검증, Health check, Rate limit, Swagger 등 |
 
 ## 배포
 
