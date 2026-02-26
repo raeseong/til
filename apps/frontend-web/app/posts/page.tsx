@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getPosts } from '@/lib/api';
+import { getPosts, type PostListItem } from '@/lib/api';
 
 /**
  * [Next 구성 이유]
@@ -12,10 +12,11 @@ import { getPosts } from '@/lib/api';
  * - 클라이언트 JS 없이도 내용이 보이므로 접근성·저사양 환경에 좋습니다.
  */
 export default async function PostsPage() {
-  let posts: Awaited<ReturnType<typeof getPosts>> = [];
+  let posts: PostListItem[] = [];
   let error: string | null = null;
   try {
-    posts = await getPosts();
+    const res = await getPosts();
+    posts = res.list;
   } catch (e) {
     error = e instanceof Error ? e.message : 'Request failed';
   }

@@ -57,8 +57,27 @@ export interface Post {
   deleted_at: string | null;
 }
 
-export async function getAllPosts(): Promise<Post[]> {
-  return fetchApi<Post[]>('/posts/admin/all');
+export type PaginationMeta = {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPage: number;
+};
+
+export type PaginatedPostsResponse = {
+  pagination: PaginationMeta;
+  list: Post[];
+};
+
+export async function getAllPosts(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<PaginatedPostsResponse> {
+  const search = new URLSearchParams();
+  if (params?.page != null) search.set('page', String(params.page));
+  if (params?.pageSize != null) search.set('pageSize', String(params.pageSize));
+  const query = search.toString() ? `?${search.toString()}` : '';
+  return fetchApi<PaginatedPostsResponse>(`/posts/admin/all${query}`);
 }
 
 export async function getPostById(id: number): Promise<Post | null> {

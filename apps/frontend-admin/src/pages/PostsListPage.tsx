@@ -6,7 +6,10 @@ export default function PostsListPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = () => getAllPosts().then(setPosts).finally(() => setLoading(false));
+  const load = () =>
+    getAllPosts()
+      .then((res) => setPosts(res.list))
+      .finally(() => setLoading(false));
 
   useEffect(() => {
     load();

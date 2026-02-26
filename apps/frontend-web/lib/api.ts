@@ -43,8 +43,24 @@ export type PostDetail = PostListItem & {
   updated_at: string;
 };
 
-export async function getPosts(): Promise<PostListItem[]> {
-  return fetchApi<PostListItem[]>('/posts');
+export type PaginationMeta = {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPage: number;
+};
+
+export type PaginatedPostsResponse = {
+  pagination: PaginationMeta;
+  list: PostListItem[];
+};
+
+export async function getPosts(params?: { page?: number; pageSize?: number }): Promise<PaginatedPostsResponse> {
+  const search = new URLSearchParams();
+  if (params?.page != null) search.set('page', String(params.page));
+  if (params?.pageSize != null) search.set('pageSize', String(params.pageSize));
+  const query = search.toString() ? `?${search.toString()}` : '';
+  return fetchApi<PaginatedPostsResponse>(`/posts${query}`);
 }
 
 export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
