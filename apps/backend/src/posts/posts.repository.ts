@@ -19,12 +19,44 @@ export class PostsRepository {
     return rows.map((row) => this.mapRow(row));
   }
 
+  async findAllPaginated(skip: number, take: number): Promise<Post[]> {
+    const rows = await this.prisma.post.findMany({
+      where: { deleted_at: null },
+      orderBy: { id: 'asc' },
+      skip,
+      take,
+    });
+    return rows.map((row) => this.mapRow(row));
+  }
+
+  async countAll(): Promise<number> {
+    return this.prisma.post.count({
+      where: { deleted_at: null },
+    });
+  }
+
   async findPublished(): Promise<Post[]> {
     const rows = await this.prisma.post.findMany({
       where: { published: true, deleted_at: null },
       orderBy: { id: 'desc' },
     });
     return rows.map((row) => this.mapRow(row));
+  }
+
+  async findPublishedPaginated(skip: number, take: number): Promise<Post[]> {
+    const rows = await this.prisma.post.findMany({
+      where: { published: true, deleted_at: null },
+      orderBy: { id: 'desc' },
+      skip,
+      take,
+    });
+    return rows.map((row) => this.mapRow(row));
+  }
+
+  async countPublished(): Promise<number> {
+    return this.prisma.post.count({
+      where: { published: true, deleted_at: null },
+    });
   }
 
   async findById(id: number): Promise<Post | null> {

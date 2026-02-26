@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseIntPipe,
   UseGuards,
   HttpCode,
@@ -16,7 +17,11 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiOkResponse } from '@nestjs/swagger';
+import { PaginationQueryDto, createPaginatedResponseDto } from '../common/dto/pagination.dto';
+import { PostResponseDto } from './dto/post-response.dto';
+
+const PostListResponseDto = createPaginatedResponseDto(PostResponseDto);
 
 @ApiTags('posts')
 @Controller('posts')
@@ -24,17 +29,19 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  @ApiOperation({ summary: '공개 글 목록 (published만)' })
-  findAll() {
-    return this.postsService.findPublished();
+  @ApiOperation({ summary: '공개 글 목록 (published만, 페이지네이션)' })
+  @ApiOkResponse({ type: PostListResponseDto })
+  findPublished(@Query() query: PaginationQueryDto) {
+    return this.postsService.findPublishedPaginated(query);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get('admin/all')
-  @ApiOperation({ summary: '전체 글 목록 (관리자)' })
-  findAllAdmin() {
-    return this.postsService.findAll();
+  @ApiOperation({ summary: '전체 글 목록 (관리자, 페이지네이션)' })
+  @ApiOkResponse({ type: PostListResponseDto })
+  findAllAdmin(@Query() query: PaginationQueryDto) {
+    return this.postsService.findAllAdminPaginated(query);
   }
 
   @UseGuards(JwtAuthGuard)

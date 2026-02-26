@@ -4,17 +4,39 @@ import { Post } from './posts.types';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { generateSlug } from '@til/shared';
+import type { PaginatedResponseDto } from '../common/dto/pagination.dto';
+import { PaginationQueryDto, buildPaginationMeta } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class PostsService {
   constructor(private readonly repo: PostsRepository) {}
 
-  async findPublished(): Promise<Post[]> {
-    return this.repo.findPublished();
+  async findPublishedPaginated(query: PaginationQueryDto): Promise<PaginatedResponseDto<Post>> {
+    const { skip, take } = query.toSkipTake();
+    const [list, totalCount] = await Promise.all([
+      this.repo.findPublishedPaginated(skip, take),
+      this.repo.countPublished(),
+    ]);
+    const page = query.page ?? 1;
+    const pageSize = query.pageSize ?? 10;
+    return {
+      pagination: buildPaginationMeta(page, pageSize, totalCount),
+      list,
+    };
   }
 
-  async findAll(): Promise<Post[]> {
-    return this.repo.findAll();
+  async findAllAdminPaginated(query: PaginationQueryDto): Promise<PaginatedResponseDto<Post>> {
+    const { skip, take } = query.toSkipTake();
+    const [list, totalCount] = await Promise.all([
+      this.repo.findAllPaginated(skip, take),
+      this.repo.countAll(),
+    ]);
+    const page = query.page ?? 1;
+    const pageSize = query.pageSize ?? 10;
+    return {
+      pagination: buildPaginationMeta(page, pageSize, totalCount),
+      list,
+    };
   }
 
   async findBySlug(slug: string): Promise<Post | null> {
