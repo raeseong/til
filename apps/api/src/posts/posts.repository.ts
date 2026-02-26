@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Post } from '@til/shared';
 
@@ -8,6 +8,10 @@ const TABLE = 'posts';
 export class PostsRepository {
   constructor(private readonly supabase: SupabaseService) {}
 
+  private throwOnError(error: { message: string }): never {
+    throw new InternalServerErrorException(error.message);
+  }
+
   async findAll(): Promise<Post[]> {
     const { data, error } = await this.supabase
       .getClient()
@@ -15,7 +19,7 @@ export class PostsRepository {
       .select('*')
       .is('deleted_at', null)
       .order('id', { ascending: true });
-    if (error) throw new Error(error.message);
+    if (error) this.throwOnError(error);
     return (data ?? []).map(this.mapRow);
   }
 
@@ -27,7 +31,7 @@ export class PostsRepository {
       .eq('published', true)
       .is('deleted_at', null)
       .order('id', { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) this.throwOnError(error);
     return (data ?? []).map(this.mapRow);
   }
 
@@ -41,7 +45,7 @@ export class PostsRepository {
       .single();
     if (error) {
       if (error.code === 'PGRST116') return null;
-      throw new Error(error.message);
+      this.throwOnError(error);
     }
     return data ? this.mapRow(data) : null;
   }
@@ -56,9 +60,25 @@ export class PostsRepository {
       .single();
     if (error) {
       if (error.code === 'PGRST116') return null;
-      throw new Error(error.message);
+      this.throwOnError(error);
     }
     return data ? this.mapRow(data) : null;
+  }
+
+  /** slug가 이미 존재하는지 확인 (excludeId 제외). */
+  async existsBySlug(slug: string, excludeId?: number): Promise<boolean> {
+    let q = this.supabase
+      .getClient()
+      .from(TABLE)
+      .select('id', { count: 'exact', head: true })
+      .eq('slug', slug)
+      .is('deleted_at', null);
+    if (excludeId != null) {
+      q = q.neq('id', excludeId);
+    }
+    const { count, error } = await q;
+    if (error) this.throwOnError(error);
+    return (count ?? 0) > 0;
   }
 
   async create(post: Omit<Post, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<Post> {
@@ -80,7 +100,7 @@ export class PostsRepository {
       .insert(row)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) this.throwOnError(error);
     return this.mapRow(data);
   }
 
@@ -97,7 +117,7 @@ export class PostsRepository {
       .single();
     if (error) {
       if (error.code === 'PGRST116') return null;
-      throw new Error(error.message);
+      this.throwOnError(error);
     }
     return data ? this.mapRow(data) : null;
   }
@@ -111,7 +131,7 @@ export class PostsRepository {
       .eq('id', id)
       .is('deleted_at', null)
       .select('id');
-    if (error) throw new Error(error.message);
+    if (error) this.throwOnError(error);
     return (data?.length ?? 0) > 0;
   }
 

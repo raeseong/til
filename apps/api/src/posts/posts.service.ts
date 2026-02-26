@@ -54,10 +54,9 @@ export class PostsService {
   }
 
   private async ensureUniqueSlug(baseSlug: string, excludeId?: number): Promise<string> {
-    const posts = await this.repo.findAll();
     let slug = baseSlug;
     let counter = 1;
-    while (posts.some((p) => p.slug === slug && p.id !== excludeId)) {
+    while (await this.repo.existsBySlug(slug, excludeId)) {
       slug = `${baseSlug}-${counter}`;
       counter++;
     }

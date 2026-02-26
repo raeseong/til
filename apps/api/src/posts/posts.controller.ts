@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -32,8 +33,10 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('admin/:id')
-  findById(@Param('id') id: string) {
-    return this.postsService.findById(Number(id));
+  async findById(@Param('id') id: string) {
+    const post = await this.postsService.findById(Number(id));
+    if (!post) throw new NotFoundException('Post not found');
+    return post;
   }
 
   @Get(':slug')
