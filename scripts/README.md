@@ -25,15 +25,31 @@
 
 | 프로젝트 | Ignored Build Step 명령 |
 |----------|-------------------------|
-| **frontend-web** (Next 공개 앱) | `bash scripts/vercel-ignore-build.sh apps/frontend-web packages/shared` |
+| **frontend-web** (Next 공개 앱) | `bash scripts/vercel-ignore-build.sh apps/frontend-web packages/shared package.json pnpm-lock.yaml pnpm-workspace.yaml` |
 | **frontend-admin** (어드민) | `bash scripts/vercel-ignore-build.sh apps/frontend-admin packages/shared` |
+
+- **frontend-web**은 루트의 `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml` 이 바뀌어도 빌드합니다 (의존성/워크스페이스 변경 반영).
+- 인자 중 `/`가 없으면 **루트 파일 이름**(정확 일치)으로 취급합니다.
 
 대시보드에 이미 값을 넣었다면, **vercel.json의 ignoreCommand가 우선**됩니다. 대시보드 설정은 코드에 없을 때만 쓰면 됩니다.
 
 - **exit 0** → 빌드 스킵 (해당 경로 변경 없음)
 - **exit 1** → 빌드 실행 (해당 경로 또는 shared 변경됨, 또는 첫 배포)
 
-스크립트는 `VERCEL_GIT_PREVIOUS_SHA`와 `VERCEL_GIT_COMMIT_SHA` 사이 변경 파일을 보고, 인자로 준 경로 접두사가 포함된 변경이 있으면 빌드하도록 동작합니다.
+스크립트는 `VERCEL_GIT_PREVIOUS_SHA`와 `VERCEL_GIT_COMMIT_SHA` 사이 변경 파일을 보고, 인자로 준 **경로 접두사**(`scope/`) 또는 **루트 파일 이름**(`scope`에 `/` 없음)이 포함되면 빌드하도록 동작합니다.
+
+### 왜 변경 없는데 빌드가 실행됐을 수 있는지
+
+다음 두 경우에는 **경로와 상관없이** 빌드가 실행됩니다.
+
+1. **첫 배포**  
+   `VERCEL_GIT_PREVIOUS_SHA`가 비어 있으면 “이전 배포 없음”으로 보고 무조건 빌드합니다.
+2. **Shallow clone**  
+   Vercel은 저장소를 shallow clone해서 과거 커밋이 제한적으로만 있습니다.  
+   `VERCEL_GIT_PREVIOUS_SHA`가 클론에 없으면 `git diff`가 실패하고, 스크립트는 “diff 불가 → 안전하게 빌드”로 처리해 **exit 1**로 빌드를 실행합니다.  
+   스크립트는 이때 `git fetch --depth=100`으로 히스토리를 더 가져온 뒤 diff를 다시 시도하고, 그래도 실패하면 빌드합니다.
+
+그래서 backend/docs 등만 수정했는데 frontend-admin 빌드가 떴다면, 대부분 **2번(shallow clone)** 때문입니다. 스크립트를 수정해 fetch 후 재시도하도록 해 두었으므로, 같은 푸시에서 재시도 시에는 스킵될 가능성이 높습니다.
 
 ---
 

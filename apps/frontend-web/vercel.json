@@ -1,4 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "cd ../.. && bash scripts/vercel-ignore-build.sh apps/frontend-web packages/shared"
+  "ignoreCommand": "cd ../.. && bash scripts/vercel-ignore-build.sh apps/frontend-web packages/shared package.json pnpm-lock.yaml pnpm-workspace.yaml"
 }
