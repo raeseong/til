@@ -1,6 +1,7 @@
-# Render Blueprint (IaC)
+# Render Blueprint (IaC) — 현재 미사용
+# Blueprint를 쓰지 않을 때는 이 파일이 배포에 적용되지 않습니다.
+# 수동 Web Service 설정 방법: docs/render.md 참고 (Root Directory, Build/Start Command, Included Paths)
 # https://docs.render.com/blueprint-spec
-# 대시보드에서 이 저장소를 Blueprint로 연결하면 아래 설정이 적용됩니다.
 
 services:
   - type: web

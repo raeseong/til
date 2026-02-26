@@ -1,35 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Post } from '@til/shared';
+import type { Post as PrismaPost } from '@prisma/client';
+import { Post } from './posts.types';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PostsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  private mapRow(row: {
-    id: bigint;
-    title: string;
-    summary: string;
-    content: string;
-    tags: string[];
-    published: boolean;
-    slug: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date | null;
-  }): Post {
-    return {
-      id: Number(row.id),
-      title: row.title,
-      summary: row.summary,
-      content: row.content,
-      tags: row.tags ?? [],
-      published: row.published,
-      slug: row.slug,
-      created_at: row.created_at.toISOString(),
-      updated_at: row.updated_at.toISOString(),
-      deleted_at: row.deleted_at?.toISOString() ?? null,
-    };
+  private mapRow(row: PrismaPost): Post {
+    return { ...row, id: Number(row.id) };
   }
 
   async findAll(): Promise<Post[]> {

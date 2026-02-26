@@ -1,0 +1,28 @@
+# Render 백엔드 배포 상태를 GitHub 커밋 체크로 표시
+# backend 관련 경로가 변경된 푸시에서만 실행 (Render Build Filter와 동일한 범위)
+# 필요 시크릿: RENDER_TOKEN, RENDER_SERVICE_ID (설정 방법은 docs/render.md 참고)
+
+name: Render deployment status
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/backend/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+
+jobs:
+  render-status:
+    name: Render backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Render deployment
+        uses: bounceapp/render-action@v0.12.0
+        with:
+          render-token: ${{ secrets.RENDER_TOKEN }}
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          retries: 30
+          wait: 10000

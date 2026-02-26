@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { Post } from '@til/shared';
+import { Post } from './posts.types';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { generateSlug } from '@til/shared';
