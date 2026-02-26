@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "cd ../.. && bash scripts/vercel-ignore-build.sh apps/public-next packages/shared"
+}

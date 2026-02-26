@@ -1,0 +1,28 @@
+# Render Blueprint (IaC)
+# https://docs.render.com/blueprint-spec
+# 대시보드에서 이 저장소를 Blueprint로 연결하면 아래 설정이 적용됩니다.
+
+services:
+  - type: web
+    name: til-api
+    runtime: node
+    region: oregon
+
+    # 모노레포: API 앱 기준 디렉터리. 빌드/시작 명령은 이 경로에서 실행됩니다.
+    rootDir: apps/api
+
+    # 저장소 루트에서 의존성 설치 및 shared → api 순서로 빌드
+    buildCommand: cd ../.. && corepack enable && pnpm install && pnpm --filter @til/shared build && pnpm --filter @til/api build
+    startCommand: node dist/main
+
+    # 이 경로가 변경된 푸시에서만 자동 배포 (그 외 푸시는 배포 스킵)
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/shared/**
+
+    # 환경 변수(SUPABASE_URL, JWT_SECRET 등)는 대시보드에서 설정하거나
+    # envVarGroups / envVars 로 비밀 아닌 값만 지정합니다.
+    # envVars:
+    #   - key: NODE_ENV
+    #     value: production
