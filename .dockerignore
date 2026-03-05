@@ -1,0 +1,39 @@
+# Git / IDE
+.git
+.gitignore
+.cursor
+*.md
+!apps/backend/README.md
+
+# Dependencies (이미 빌드 스테이지에서 설치)
+node_modules
+**/node_modules
+
+# Build outputs (다시 빌드함)
+dist
+.next
+.turbo
+**/dist
+**/.next
+
+# Env (런타임에 바인드 마운트 또는 시크릿으로 주입)
+.env
+.env.*
+!.env.example
+
+# Tests / lint
+**/*.test.ts
+**/*.spec.ts
+**/__tests__
+.eslintrc*
+.prettierrc*
+coverage
+*.log
+
+# Docker
+Dockerfile*
+.dockerignore
+
+# 기타
+*.local
+.DS_Store

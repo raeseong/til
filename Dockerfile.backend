@@ -1,0 +1,40 @@
+# ============================================================
+# 모노레포 루트를 기준으로 빌드해야 Prisma 생성물 등이 올바르게 참조됩니다.
+#
+# 빌드 (반드시 프로젝트 루트에서):
+#   docker build -f Dockerfile.backend -t til-backend .
+#
+# 실행 예:
+#   docker run --env-file apps/backend/.env -p 3000:3000 til-backend
+# ============================================================
+
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@10.22.0 --activate
+WORKDIR /app
+
+# 의존성만 설치 (루트에서 해야 pnpm 스토어/심링크 구조 유지)
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/backend/package.json ./apps/backend/
+COPY packages/shared/package.json ./packages/shared/
+RUN pnpm install --frozen-lockfile
+
+# 빌드: prisma generate + nest build (루트에서 실행해 Prisma 생성물이 스토어에 채워짐)
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/backend/node_modules ./apps/backend/node_modules
+COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
+COPY . .
+RUN pnpm run build:backend
+
+# 실행 스테이지: 루트와 동일한 디렉터리 구조 유지해 node_modules 심링크가 유효하도록
+FROM base AS runner
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/backend ./apps/backend
+COPY --from=builder /app/packages ./packages
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+WORKDIR /app/apps/backend
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "dist/main.js"]

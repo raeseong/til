@@ -30,6 +30,11 @@ export async function fetchApi<T>(path: string, options?: RequestInit): Promise<
   return res.json();
 }
 
+/** Next 서버에서만 유효. 캐시 태그로 on-demand revalidate 시 무효화 대상 지정 */
+const nextFetchOptions = {
+  next: { tags: ['posts'] as const },
+} as RequestInit;
+
 export type PostListItem = {
   id: number;
   title: string;
@@ -50,9 +55,9 @@ export async function getPosts(params?: { page?: number; pageSize?: number }): P
   if (params?.page != null) search.set('page', String(params.page));
   if (params?.pageSize != null) search.set('pageSize', String(params.pageSize));
   const query = search.toString() ? `?${search.toString()}` : '';
-  return fetchApi<PaginatedResponse<PostListItem>>(`/posts${query}`);
+  return fetchApi<PaginatedResponse<PostListItem>>(`/posts${query}`, nextFetchOptions);
 }
 
 export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
-  return fetchApi<PostDetail | null>(`/posts/${slug}`);
+  return fetchApi<PostDetail | null>(`/posts/${slug}`, nextFetchOptions);
 }

@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.22.0",
   "scripts": {
-    "prepare": "turbo run build --filter=@til/shared",
+    "prepare": "turbo run build --filter=@til/shared --filter=@til/ui",
     "dev": "turbo run dev",
     "dev:backend": "turbo run dev --filter=@til/backend",
     "dev:frontend-admin": "turbo run dev --filter=@til/frontend-admin",
