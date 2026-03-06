@@ -11,10 +11,13 @@
   "dependencies": {
     "@til/shared": "workspace:*",
     "@til/ui": "workspace:*",
+    "github-markdown-css": "^5.9.0",
+    "highlight.js": "^11.11.1",
     "next": "^14.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
+    "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {

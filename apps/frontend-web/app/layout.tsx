@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import 'github-markdown-css/github-markdown.css';
+import 'highlight.js/styles/github.min.css';
 
 export const metadata: Metadata = {
   title: 'TIL - Today I Learned',
